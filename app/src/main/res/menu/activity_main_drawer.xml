@@ -9,21 +9,32 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="home" />
         <item
-            android:id="@+id/nav_about"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="About" />
-        <item
             android:id="@+id/nav_attendance"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Attendance" />
+        <item
+            android:id="@+id/nav_noticeBoard"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Notice Board" />
+        <item
+            android:id="@+id/nav_teacher"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Teacher" />
+        <item
+            android:id="@+id/nav_student"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Student" />
+        <item
+            android:id="@+id/nav_timeTable"
+            android:icon="@drawable/common_full_open_on_phone"
+            android:title="Time Table"/>
         <item
             android:id="@+id/nav_syllabus"
             android:icon="@drawable/ic_menu_manage"
             android:title="Syllabus" />
         <item
-            android:id="@+id/nav_noticeBoard"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Notice Board" />
+            android:id="@+id/nav_notification"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Notification" />
     </group>
-
 </menu>

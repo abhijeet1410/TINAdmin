@@ -5,12 +5,75 @@
     android:layout_height="match_parent"
     tools:context=".fragments.NoticeBoardFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hello Notice Board Fragment"
-        android:textSize="25sp"
-        android:gravity="center"/>
-
+        android:orientation="vertical"
+        android:gravity="center">
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/title_input">
+            <EditText
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:hint="Title"
+                android:inputType="text"
+                android:id="@+id/notice_title"/>
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/body_input">
+            <EditText
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:hint="Body"
+                android:id="@+id/notice_body"/>
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="250dp"
+            android:layout_height="wrap_content">
+            <EditText
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:hint="Url"
+                android:id="@+id/notice_url"/>
+        </android.support.design.widget.TextInputLayout>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1st Year"
+            android:id="@+id/check_first_year"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2nd Year"
+            android:id="@+id/check_second_year"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3rd Year"
+            android:id="@+id/check_third_year"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4th Year"
+            android:id="@+id/check_fourth_year"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5th Year"
+            android:id="@+id/check_fifth_year"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Teachers"
+            android:id="@+id/check_teachers"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Notice"
+            android:id="@+id/add_notice_btn"/>
+    </LinearLayout>
 </FrameLayout>
