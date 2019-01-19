@@ -20,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.abhijeet14.tinadmin.dialog.PasswordDialog;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
@@ -53,7 +52,6 @@ public class SignupActivity extends AppCompatActivity {
     private CircleImageView img;
     private byte[] mbyte;
     private FirebaseAuth mAuth;
-    private String adminEmail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +70,6 @@ public class SignupActivity extends AppCompatActivity {
         rollNum = findViewById(R.id.signup_roll_number);
         rollLayout = findViewById(R.id.signup_roll_layout);
         img=findViewById(R.id.signup_dp);
-        adminEmail=mAuth.getCurrentUser().getEmail();
         nameText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -218,35 +215,26 @@ public class SignupActivity extends AppCompatActivity {
     }
     public void doSignup(View view) {
         if(validate()){
-            new PasswordDialog(this);
+            createUser();
         }
     }
-    public void createUser(final String pass){
+    public void createUser(){
         final ProgressDialog p=new ProgressDialog(this);
         p.setMessage("Please Wait");
         p.setCancelable(false);
         p.show();
-        mAuth.signInWithEmailAndPassword(adminEmail,pass).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Snackbar.make(img,"Can't verify the admin",Snackbar.LENGTH_LONG).show();
-                p.dismiss();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-            @Override
-            public void onSuccess(AuthResult authResult) {
-                final String name=nameText.getText().toString().trim();
-                final String email=emailText.getText().toString().trim();
-                final String address=addressText.getText().toString().trim();
-                final String number=phoneText.getText().toString().trim();
-                String password=passwordText.getText().toString().trim();
-                final String roll=year.getSelectedItem().toString()+"IMCA"+rollNum.getSelectedItem().toString();
-                final String year=yearText.getText().toString().trim();
-                mAuth.createUserWithEmailAndPassword(email,password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+        final String name=nameText.getText().toString().trim();
+        final String email=emailText.getText().toString().trim();
+        final String address=addressText.getText().toString().trim();
+        final String number=phoneText.getText().toString().trim();
+        String password=passwordText.getText().toString().trim();
+        final String roll=year.getSelectedItem().toString()+"IMCA"+rollNum.getSelectedItem().toString();
+        final String year=yearText.getText().toString().trim();
+        mAuth.createUserWithEmailAndPassword(email,password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        final String uid=authResult.getUser().getUid();
-                        StorageReference dpStore=FirebaseStorage.getInstance().getReference().child("dp").child(uid+".jpg");
+            final String uid=authResult.getUser().getUid();
+                StorageReference dpStore=FirebaseStorage.getInstance().getReference().child("dp").child(uid+".jpg");
                         dpStore.putBytes(mbyte).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
@@ -280,24 +268,16 @@ public class SignupActivity extends AppCompatActivity {
                                 }).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        mAuth.getCurrentUser().updateProfile(new UserProfileChangeRequest.Builder().setDisplayName(categorySelect.getSelectedItem().toString()).build()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        mAuth.getCurrentUser().updateProfile(
+                                                new UserProfileChangeRequest.Builder()
+                                                        .setDisplayName(categorySelect.getSelectedItem().toString()).build())
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
-                                                mAuth.signOut();
-                                                mAuth.signInWithEmailAndPassword(adminEmail,pass).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                                    @Override
-                                                    public void onSuccess(AuthResult authResult) {
-                                                        p.dismiss();
-                                                        Toast.makeText(SignupActivity.this, "User successfully created", Toast.LENGTH_SHORT).show();
-                                                        finish();
-                                                    }
-                                                }).addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        p.dismiss();
-                                                        Snackbar.make(img,e.getMessage(),Snackbar.LENGTH_LONG).show();
-                                                    }
-                                                });
+                                                            mAuth.signOut();
+                                                            p.dismiss();
+                                                            Toast.makeText(SignupActivity.this, "User successfully created", Toast.LENGTH_SHORT).show();
+
                                             }
                                         });
 
@@ -314,8 +294,6 @@ public class SignupActivity extends AppCompatActivity {
                         p.dismiss();
                     }
                 });
-            }
-        });
     }
     boolean validate(){
         if(TextUtils.isEmpty(nameText.getText().toString().trim())){

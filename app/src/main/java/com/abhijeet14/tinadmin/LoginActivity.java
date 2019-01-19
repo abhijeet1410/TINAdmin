@@ -2,6 +2,7 @@ package com.abhijeet14.tinadmin;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -9,30 +10,36 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LoginActivity extends AppCompatActivity {
 private EditText usernameText, passwordText;
-private FirebaseAuth mAuth;
+private DatabaseReference dbRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         usernameText = findViewById(R.id.login_username);
         passwordText = findViewById(R.id.login_password);
-        mAuth = FirebaseAuth.getInstance();
+        dbRef=FirebaseDatabase.getInstance().getReference().child("users").child("admin");
     }
 
     public void doLogin(final View view) {
-        String user = usernameText.getText().toString().trim();
-        String pass = passwordText.getText().toString().trim();
+        final String user = usernameText.getText().toString().trim();
+        final String pass = passwordText.getText().toString().trim();
         if(TextUtils.isEmpty(user) || TextUtils.isEmpty(pass)){
             Snackbar.make(view, "Fields can't be left blank", Snackbar.LENGTH_LONG).show();
         }else {
@@ -45,24 +52,32 @@ private FirebaseAuth mAuth;
                 p.setMessage("Please wait while we are logging you in");
                 p.setCancelable(false);
                 p.show();
-                mAuth.signInWithEmailAndPassword(user+"@gmail.com",pass).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                dbRef.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onSuccess(AuthResult authResult) {
+                    public void onDataChange(DataSnapshot dataSnapshot) {
                         p.dismiss();
-                        String name = authResult.getUser().getDisplayName();
-                        if (name.equals("admin")) {
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        } else {
-                            mAuth.signOut();
-                            Snackbar.make(view, "You aren't an admin, get lost and login in your respective app", Snackbar.LENGTH_LONG)
-                                    .setAction("Action", null).show();
+                        String user1=dataSnapshot.child("email").getValue(String.class);
+                        String pass1=dataSnapshot.child("password").getValue(String.class);
+                        if(user1.equals(user)){
+                            if(pass1.equals(pass)){
+                                SharedPreferences s=getSharedPreferences("login",MODE_PRIVATE);
+                                SharedPreferences.Editor editor=s.edit();
+                                editor.putBoolean("login",true);
+                                editor.apply();
+                                startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                                finish();
+                            }else{
+                                Toast.makeText(LoginActivity.this, "Incorrect Password", Toast.LENGTH_SHORT).show();
+                            }
+                        }else{
+                            Toast.makeText(LoginActivity.this, "Incorrect user name", Toast.LENGTH_SHORT).show();
                         }
+                        dbRef.removeEventListener(this);
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-                        p.dismiss();
-                        Snackbar.make(view, e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    public void onCancelled(DatabaseError databaseError) {
+
                     }
                 });
             }
@@ -71,9 +86,10 @@ private FirebaseAuth mAuth;
     @Override
     protected void onStart() {
         super.onStart();
-        if(mAuth.getCurrentUser()!=null){
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        if(getSharedPreferences("login",MODE_PRIVATE).getBoolean("login",false)){
+            startActivity(new Intent(LoginActivity.this,MainActivity.class));
             finish();
         }
     }
+
 }

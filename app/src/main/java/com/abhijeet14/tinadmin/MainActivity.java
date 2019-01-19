@@ -1,5 +1,7 @@
 package com.abhijeet14.tinadmin;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -83,7 +85,12 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            SharedPreferences s=getSharedPreferences("login",MODE_PRIVATE);
+            SharedPreferences.Editor editor=s.edit();
+            editor.putBoolean("login",false);
+            editor.apply();
+            startActivity(new Intent(MainActivity.this,LoginActivity.class));
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
